@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Product;
+use App\Entity\ProductLine;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class ProductRepository
@@ -43,7 +44,25 @@ class ProductRepository
             $query->where('buyPrice', '<=', $qtyMax);
         }
 
+        if ($orderBy = $filters['orderBy'] ?? null) {
+            $query->orderBy($orderBy, $filters['orderDirection'] ?? 'asc');
+        }
+
 
         return $query->paginate(self::ITEMS_PER_PAGE);
+    }
+
+    public function findLines(?string $search = null): array
+    {
+        $query = ProductLine::query();
+
+        if ($search) {
+            $query->where('productLine', 'LIKE', "%{$search}%");
+        }
+
+        return array_map(
+            static fn(ProductLine $productLine) => $productLine->productLine,
+            $query->get()->all()
+        );
     }
 }

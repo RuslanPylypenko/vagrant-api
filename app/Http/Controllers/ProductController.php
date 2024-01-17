@@ -22,6 +22,13 @@ class ProductController extends Controller
         return response($this->productRepository->find($request->all()));
     }
 
+    public function lines(Request $request)
+    {
+        return response([
+            'data' => $this->productRepository->findLines($request->get('search'))
+        ]);
+    }
+
     /**
      * Store a newly created resource in storage.
      *
